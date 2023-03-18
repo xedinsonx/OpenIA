@@ -1,0 +1,51 @@
+﻿@page "/"
+@using Chatgpt.Services;
+
+@inject IAnswerGeneratorService AnswerGeneratorService
+
+<h3>Asistente</h3>
+
+<EditForm Model="@asistente">
+    <textarea class="form-control" id="txt" @bind="asistente.Prompt"
+      style="width:500px;" placeholder="Ingresar al Prompt" />
+      <br />
+      <table>
+          <tr>
+          <td><button class="btn btn-primary" @onclick="Generate">Generar</button></td>
+        <td><button class="btn btn-primary" @onclick="Clear">Limpiar</button></td>
+        </tr>
+    </table>
+
+      <br />
+      <br />
+
+      <h2>Chat</h2>
+    <br />
+    <br />
+
+    @if (answers != null && answers.Count > 0)
+    {
+        foreach (var answer in answers)
+        {
+            <p class="bg-chat">@answer</p>
+        }
+    }
+
+</EditForm>
+
+@code {
+    AsistenteChat asistente = new AsistenteChat();
+    List<string> answers = new List<string>();
+
+    private async void Generate()
+    {
+        var answer = await AnswerGeneratorService.GenerateAnserAsync(asistente.Prompt);
+        answers.Add(answer);
+        StateHasChanged();
+    }
+    private async void Clear()
+    {
+        answers = new List<string>();
+        asistente.Prompt = string.Empty;
+    }
+}
